@@ -77,9 +77,29 @@ const colors: Array<Number3> = [
   ...multiplyItem<Number3>([Math.random(), Math.random(), Math.random()], 4),
 ];
 
-let rotationXInDegrees = 30;
+let rotationXInDegrees = 0;
 let rotationYInDegrees = 0;
 let rotationZInDegrees = 0;
+
+let rotationXChange = 1;
+let rotationYChange = 1;
+let rotationZChange = 1;
+
+document.querySelector<HTMLInputElement>("#x-axis")!.onchange = (ev) => {
+  const isRotationOn = (ev.target as HTMLInputElement).checked;
+  rotationXChange = isRotationOn ? 1 : 0;
+};
+
+document.querySelector<HTMLInputElement>("#y-axis")!.onchange = (ev) => {
+  const isRotationOn = (ev.target as HTMLInputElement).checked;
+  rotationYChange = isRotationOn ? 1 : 0;
+};
+
+document.querySelector<HTMLInputElement>("#z-axis")!.onchange = (ev) => {
+  const isRotationOn = (ev.target as HTMLInputElement).checked;
+  rotationZChange = isRotationOn ? 1 : 0;
+};
+
 client.uniform("rotationX", "uniform1f", rotationXInDegrees);
 client.uniform("rotationY", "uniform1f", rotationYInDegrees);
 client.uniform("rotationZ", "uniform1f", rotationZInDegrees);
@@ -118,10 +138,9 @@ const drawCube = (): void => {
 drawCube();
 
 const drawLoop = (): void => {
-  // console.log(now);
-  // rotationXInDegrees+=1;
-  rotationYInDegrees+=1;
-  rotationZInDegrees+=3;
+  rotationXInDegrees += rotationXChange;
+  rotationYInDegrees += rotationYChange;
+  rotationZInDegrees += rotationZChange;
   client.uniform("rotationX", "uniform1f", rotationXInDegrees);
   client.uniform("rotationY", "uniform1f", rotationYInDegrees);
   client.uniform("rotationZ", "uniform1f", rotationZInDegrees);
@@ -130,8 +149,8 @@ const drawLoop = (): void => {
 };
 
 const handleResize = (): void => {
-  canvas.removeAttribute('width');
-  canvas.removeAttribute('height');
+  canvas.removeAttribute("width");
+  canvas.removeAttribute("height");
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
   gl.viewport(0, 0, canvas.width, canvas.height);
