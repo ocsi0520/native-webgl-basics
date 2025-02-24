@@ -6,14 +6,32 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>Second web gl stuff</h1>
-    <canvas width="1024" height="768"></canvas>
+    <h1>A simple rotating cube with native web gl</h1>
+    <div class="canvas-wrapper">
+      <canvas></canvas>
+    </div>
     <style>
-      canvas {
-        border: 1px solid black;
+      body {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        width: 100vw;
+      }
+      .canvas-wrapper {
+        flex: 1 1 0;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+      }
+      .canvas-wrapper > canvas {
+        flex: 1 1 0;
+        background-repeat: no-repeat;
+        background-size: cover;
       }
     </style>
-    <script src="https://webgl2fundamentals.org/webgl/resources/webgl-utils.js"></script>
     <script type="module" src="./index.ts"></script>
   </body>
 </html>

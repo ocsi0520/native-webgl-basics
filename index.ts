@@ -129,4 +129,15 @@ const drawLoop = (): void => {
   requestAnimationFrame(drawLoop);
 };
 
+const handleResize = (): void => {
+  canvas.removeAttribute('width');
+  canvas.removeAttribute('height');
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+};
+
+window.onresize = handleResize;
+
+handleResize();
 drawLoop();
