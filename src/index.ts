@@ -3,8 +3,10 @@ import fragmentShaderSource from "./shader/fragmentShader.vert?raw";
 import blackHoleImage from "/black_hole.jpg?url";
 import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
 import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
-import { points } from './vertex/cube-points';
-import { colors } from './vertex/cube-color';
+import { points } from "./vertex/cube-points";
+import { colors } from "./vertex/cube-color";
+import { RotationComponent } from "./rotation/RotationComponent.js";
+import { allAxis } from "./rotation/axis";
 
 const canvas = document.querySelector("canvas");
 if (!canvas) throw new Error("no canvas found");
@@ -27,32 +29,19 @@ gl.enable(gl.CULL_FACE);
 
 client.useProgram();
 
-let rotationXInDegrees = 0;
-let rotationYInDegrees = 0;
-let rotationZInDegrees = 0;
+const rotationComponent = new RotationComponent();
 
-let rotationXChange = 1;
-let rotationYChange = 1;
-let rotationZChange = 1;
-
-document.querySelector<HTMLInputElement>("#x-axis")!.onchange = (ev) => {
-  const isRotationOn = (ev.target as HTMLInputElement).checked;
-  rotationXChange = isRotationOn ? 1 : 0;
+const uploadRotation = (): void => {
+  allAxis.forEach((axis) => {
+    client.uniform(
+      `rotation${axis.toUpperCase()}`,
+      "1f",
+      rotationComponent.getRotationFor(axis)
+    );
+  });
 };
 
-document.querySelector<HTMLInputElement>("#y-axis")!.onchange = (ev) => {
-  const isRotationOn = (ev.target as HTMLInputElement).checked;
-  rotationYChange = isRotationOn ? 1 : 0;
-};
-
-document.querySelector<HTMLInputElement>("#z-axis")!.onchange = (ev) => {
-  const isRotationOn = (ev.target as HTMLInputElement).checked;
-  rotationZChange = isRotationOn ? 1 : 0;
-};
-
-client.uniform("rotationX", "1f", rotationXInDegrees);
-client.uniform("rotationY", "1f", rotationYInDegrees);
-client.uniform("rotationZ", "1f", rotationZInDegrees);
+uploadRotation();
 client.uniform("translation", "4f", -0.25, -0.25, 0, 0);
 
 const drawCube = (): void => {
@@ -85,15 +74,9 @@ const drawCube = (): void => {
   gl.drawArrays(gl.TRIANGLE_STRIP, 14, 4);
 };
 
-drawCube();
-
 const drawLoop = (): void => {
-  rotationXInDegrees += rotationXChange;
-  rotationYInDegrees += rotationYChange;
-  rotationZInDegrees += rotationZChange;
-  client.uniform("rotationX", "1f", rotationXInDegrees);
-  client.uniform("rotationY", "1f", rotationYInDegrees);
-  client.uniform("rotationZ", "1f", rotationZInDegrees);
+  rotationComponent.increment();
+  uploadRotation();
   drawCube();
   requestAnimationFrame(drawLoop);
 };
@@ -107,6 +90,8 @@ const handleResize = (): void => {
 };
 
 window.onresize = handleResize;
+
+rotationComponent.attach(document.body);
 
 handleResize();
 drawLoop();
