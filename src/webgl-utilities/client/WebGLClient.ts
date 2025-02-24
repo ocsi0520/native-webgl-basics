@@ -1,29 +1,10 @@
-type UniformMethodName = Extract<
-  keyof WebGL2RenderingContext,
-  `uniform${string}`
->;
-type SliceOfFirst<T extends unknown[]> = T extends [unknown, ...infer R]
-  ? R
-  : never;
-
-type WebGL2MethodParams<MethodName extends UniformMethodName> = SliceOfFirst<
-  Parameters<WebGL2RenderingContext[MethodName]>
->;
-
-export type AttributeDescriptor = {
-  size: GLint;
-  type: GLenum;
-  normalized?: boolean;
-  stride?: GLsizei;
-  offset?: GLintptr;
-};
-
-export type BufferData = {
-  // contains ArrayBufferView
-  source: AllowSharedBufferSource | null;
-  usage: GLenum;
-  attributeDescriptor: AttributeDescriptor;
-};
+import {
+  WebGL2MethodParams,
+  AddUniformPrefix,
+  BufferData,
+  UniformMethodName,
+} from "./client-types";
+import { Enumerate } from "../type-utils";
 
 export class WebGLClient {
   private vertexArrayObject: WebGLVertexArrayObject;
@@ -38,7 +19,7 @@ export class WebGLClient {
   public uniform<MethodName extends UniformMethodName>(
     uniformName: string,
     methodName: MethodName,
-    ...methodParams: WebGL2MethodParams<MethodName>
+    ...methodParams: WebGL2MethodParams<AddUniformPrefix<MethodName>>
   ): void {
     this.gl.bindVertexArray(this.vertexArrayObject);
     const uniformLocation = this.gl.getUniformLocation(
@@ -46,7 +27,7 @@ export class WebGLClient {
       uniformName
     )!;
     const noTypeMethodParams = methodParams as [never, never, never, never];
-    this.gl[methodName](uniformLocation, ...noTypeMethodParams);
+    this.gl[`uniform${methodName}`](uniformLocation, ...noTypeMethodParams);
   }
 
   public attribute(
@@ -139,16 +120,3 @@ export class WebGLClient {
     );
   }
 }
-
-// https://stackoverflow.com/a/70307091
-type Enumerate<
-  N extends number,
-  Acc extends number[] = []
-> = Acc["length"] extends N
-  ? Acc[number]
-  : Enumerate<N, [...Acc, Acc["length"]]>;
-
-// type Range<F extends number, T extends number> = Exclude<
-//   Enumerate<T>,
-//   Enumerate<F>
-// >;

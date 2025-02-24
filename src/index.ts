@@ -2,7 +2,7 @@ import vertexShaderSource from "./vertex/vertexShader.vert?raw";
 import fragmentShaderSource from "./vertex/fragmentShader.vert?raw";
 import blackHoleImage from "/black_hole.jpg?url";
 import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
-import { WebGLClient } from "./webgl-utilities/WebGLClient.js";
+import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
 
 const canvas = document.querySelector("canvas");
 if (!canvas) throw new Error("no canvas found");
@@ -97,10 +97,10 @@ document.querySelector<HTMLInputElement>("#z-axis")!.onchange = (ev) => {
   rotationZChange = isRotationOn ? 1 : 0;
 };
 
-client.uniform("rotationX", "uniform1f", rotationXInDegrees);
-client.uniform("rotationY", "uniform1f", rotationYInDegrees);
-client.uniform("rotationZ", "uniform1f", rotationZInDegrees);
-client.uniform("translation", "uniform4f", -0.25, -0.25, 0, 0);
+client.uniform("rotationX", "1f", rotationXInDegrees);
+client.uniform("rotationY", "1f", rotationYInDegrees);
+client.uniform("rotationZ", "1f", rotationZInDegrees);
+client.uniform("translation", "4f", -0.25, -0.25, 0, 0);
 
 const drawCube = (): void => {
   const allCoordinates = points.flat();
@@ -138,9 +138,9 @@ const drawLoop = (): void => {
   rotationXInDegrees += rotationXChange;
   rotationYInDegrees += rotationYChange;
   rotationZInDegrees += rotationZChange;
-  client.uniform("rotationX", "uniform1f", rotationXInDegrees);
-  client.uniform("rotationY", "uniform1f", rotationYInDegrees);
-  client.uniform("rotationZ", "uniform1f", rotationZInDegrees);
+  client.uniform("rotationX", "1f", rotationXInDegrees);
+  client.uniform("rotationY", "1f", rotationYInDegrees);
+  client.uniform("rotationZ", "1f", rotationZInDegrees);
   drawCube();
   requestAnimationFrame(drawLoop);
 };
