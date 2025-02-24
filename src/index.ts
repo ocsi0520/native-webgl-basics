@@ -1,8 +1,8 @@
-import vertexShaderSource from "./vertexShader.vert?raw";
-import fragmentShaderSource from "./fragmentShader.vert?raw";
+import vertexShaderSource from "./vertex/vertexShader.vert?raw";
+import fragmentShaderSource from "./vertex/fragmentShader.vert?raw";
 import blackHoleImage from "/black_hole.jpg?url";
-import { GLProgramFactory } from "./GLProgramFactory.js";
-import { WebGLClient } from "./WebGLClient.js";
+import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
+import { WebGLClient } from "./webgl-utilities/WebGLClient.js";
 
 const canvas = document.querySelector("canvas");
 if (!canvas) throw new Error("no canvas found");
@@ -17,10 +17,7 @@ const program = new GLProgramFactory().createProgram(
   fragmentShaderSource
 );
 const client = new WebGLClient(gl, program);
-// Tell WebGL how to convert from clip space to pixels
-gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-// Clear the canvas
 gl.clearColor(0, 0, 0, 0);
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.enable(gl.DEPTH_TEST);
