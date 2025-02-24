@@ -84,9 +84,10 @@ const drawLoop = (): void => {
 const handleResize = (): void => {
   canvas.removeAttribute("width");
   canvas.removeAttribute("height");
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
-  gl.viewport(0, 0, canvas.width, canvas.height);
+  const shorterSide = Math.min(canvas.clientWidth, canvas.clientHeight);
+  canvas.width = shorterSide;
+  canvas.height = shorterSide;
+  gl.viewport(0, 0, shorterSide, shorterSide);
 };
 
 window.onresize = handleResize;
