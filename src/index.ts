@@ -1,5 +1,5 @@
-import vertexShaderSource from "./shader/vertexShader.vert?raw";
-import fragmentShaderSource from "./shader/fragmentShader.vert?raw";
+import vertexShaderSource from "./shader/cube/vertexShader.vert?raw";
+import fragmentShaderSource from "./shader/cube/fragmentShader.vert?raw";
 import blackHoleImage from "/black_hole.jpg?url";
 import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
 import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
@@ -15,23 +15,28 @@ if (!gl) throw new Error("no gl context for canvas");
 
 canvas.style.backgroundImage = `url(${blackHoleImage})`;
 
-const program = new GLProgramFactory().createProgram(
+const program1 = new GLProgramFactory().createProgram(
   gl,
   vertexShaderSource,
   fragmentShaderSource
 );
-const client = new WebGLClient(gl, program);
+const client1 = new WebGLClient(gl, program1);
+
+const program2 = new GLProgramFactory().createProgram(
+  gl,
+  vertexShaderSource,
+  fragmentShaderSource
+);
+const client2 = new WebGLClient(gl, program2);
 
 gl.clearColor(0, 0, 0, 0);
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.enable(gl.DEPTH_TEST);
 gl.enable(gl.CULL_FACE);
 
-client.useProgram();
-
 const rotationComponent = new RotationComponent();
 
-const uploadRotation = (): void => {
+const uploadRotation = (client: WebGLClient): void => {
   allAxis.forEach((axis) => {
     client.uniform(
       `rotation${axis.toUpperCase()}`,
@@ -41,10 +46,14 @@ const uploadRotation = (): void => {
   });
 };
 
-uploadRotation();
-client.uniform("translation", "4f", -0.25, -0.25, 0, 0);
+client1.useProgram();
+uploadRotation(client1);
+client1.uniform("translation", "4f", -0.5, -0.25, -0.25, 1);
+client2.useProgram();
+uploadRotation(client2);
+client2.uniform("translation", "4f", 0.2, 0.25, 0.25, 0);
 
-const drawCube = (): void => {
+const drawCube = (client: WebGLClient): void => {
   const allCoordinates = points.flat();
   client.attribute("a_position", {
     source: new Float32Array(allCoordinates),
@@ -76,8 +85,12 @@ const drawCube = (): void => {
 
 const drawLoop = (): void => {
   rotationComponent.increment();
-  uploadRotation();
-  drawCube();
+  client1.useProgram();
+  uploadRotation(client1);
+  drawCube(client1);
+  client2.useProgram();
+  uploadRotation(client2);
+  drawCube(client2);
   requestAnimationFrame(drawLoop);
 };
 
