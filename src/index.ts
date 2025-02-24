@@ -1,5 +1,5 @@
-import vertexShaderSource from "./vertex/vertexShader.vert?raw";
-import fragmentShaderSource from "./vertex/fragmentShader.vert?raw";
+import vertexShaderSource from "./shader/vertexShader.vert?raw";
+import fragmentShaderSource from "./shader/fragmentShader.vert?raw";
 import blackHoleImage from "/black_hole.jpg?url";
 import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
 import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
