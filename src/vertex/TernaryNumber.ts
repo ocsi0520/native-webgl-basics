@@ -1,0 +1,1 @@
+export type TernaryNumber = [number, number, number];

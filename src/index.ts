@@ -3,6 +3,8 @@ import fragmentShaderSource from "./shader/fragmentShader.vert?raw";
 import blackHoleImage from "/black_hole.jpg?url";
 import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
 import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
+import { points } from './vertex/cube-points';
+import { colors } from './vertex/cube-color';
 
 const canvas = document.querySelector("canvas");
 if (!canvas) throw new Error("no canvas found");
@@ -24,55 +26,6 @@ gl.enable(gl.DEPTH_TEST);
 gl.enable(gl.CULL_FACE);
 
 client.useProgram();
-
-// these are in clipspace
-const points: Array<[number, number, number]> = [
-  // front
-  [0, 0.5, 0.25], // 1
-  [0, 0, 0.25], // 2
-  [0.5, 0.5, 0.25], // 3
-  [0.5, 0, 0.25], // 4
-
-  // right side
-  [0.5, 0.5, -0.25], // 5
-  [0.5, 0, -0.25], // 6
-
-  // back side
-  [0, 0.5, -0.25], // 7
-  [0, 0, -0.25], // 8
-
-  // left side
-  [0, 0.5, 0.25], // 9 (1),
-  [0, 0, 0.25], // 10 (2)
-
-  // cut
-  // upper side
-  [0, 0, 0.25], // 10 (2)
-  [0, 0, -0.25], // 11 (8)
-  [0.5, 0, 0.25], // 12 (4)
-  [0.5, 0, -0.25], // 13 (6)
-
-  // cut
-  // down side
-  [0, 0.5, -0.25], // 7
-  [0, 0.5, 0.25], // 1
-  [0.5, 0.5, -0.25], // 5
-  [0.5, 0.5, 0.25], // 3
-];
-
-type Number3 = [number, number, number];
-
-const multiplyItem = <T>(item: T, times: number): T[] =>
-  Array.from({ length: times }).map(() => item);
-
-const colors: Array<Number3> = [
-  ...multiplyItem<Number3>([Math.random(), Math.random(), Math.random()], 4),
-  ...multiplyItem<Number3>([Math.random(), Math.random(), Math.random()], 2),
-  ...multiplyItem<Number3>([Math.random(), Math.random(), Math.random()], 2),
-  ...multiplyItem<Number3>([Math.random(), Math.random(), Math.random()], 2),
-  ...multiplyItem<Number3>([Math.random(), Math.random(), Math.random()], 4),
-  ...multiplyItem<Number3>([Math.random(), Math.random(), Math.random()], 4),
-];
 
 let rotationXInDegrees = 0;
 let rotationYInDegrees = 0;
