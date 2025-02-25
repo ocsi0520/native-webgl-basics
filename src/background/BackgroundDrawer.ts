@@ -1,7 +1,7 @@
-import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
-import backgroundVertexShaderSource from "./shader/background/vertexShader.vert?raw";
-import backgroundFragmentShaderSource from "./shader/background/fragmentShader.vert?raw";
-import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
+import { GLProgramFactory } from "../webgl-utilities/GLProgramFactory.js";
+import backgroundVertexShaderSource from "./shader/vertexShader.vert?raw";
+import backgroundFragmentShaderSource from "./shader/fragmentShader.vert?raw";
+import { WebGLClient } from "../webgl-utilities/client/WebGLClient.js";
 
 import blackHoleImage from "/black_hole.jpg?url";
 

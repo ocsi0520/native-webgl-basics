@@ -1,10 +1,10 @@
-import cubeVertexShaderSource from "./shader/cube/vertexShader.vert?raw";
-import cubeFragmentShaderSource from "./shader/cube/fragmentShader.vert?raw";
-import type { RotationDescriptor } from "./rotation/RotationComponent";
-import { WebGLClient } from "./webgl-utilities/client/WebGLClient";
-import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
-import { points } from "./vertex/cube-points";
-import { colors } from "./vertex/cube-color";
+import cubeVertexShaderSource from "./shader/vertexShader.vert?raw";
+import cubeFragmentShaderSource from "./shader/fragmentShader.vert?raw";
+import type { RotationDescriptor } from "../rotation/RotationComponent.js";
+import { WebGLClient } from "../webgl-utilities/client/WebGLClient.js";
+import { GLProgramFactory } from "../webgl-utilities/GLProgramFactory.js";
+import { points } from "./vertex/cube-points.js";
+import { colors } from "./vertex/cube-color.js";
 
 export class CubeDrawer {
   private program: WebGLProgram;
