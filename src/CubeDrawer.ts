@@ -10,12 +10,11 @@ import { colors } from "./vertex/cube-color";
 export class CubeDrawer {
   private program: WebGLProgram;
   constructor(
-    private gl: WebGL2RenderingContext,
+    programFactory: GLProgramFactory,
     private client: WebGLClient,
     offset: [number, number, number, number]
   ) {
-    this.program = new GLProgramFactory().createProgram(
-      this.gl,
+    this.program = programFactory.createProgram(
       cubeVertexShaderSource,
       cubeFragmentShaderSource
     );
@@ -42,29 +41,37 @@ export class CubeDrawer {
     const allCoordinates = points.flat();
     this.client.attribute("a_position", {
       source: new Float32Array(allCoordinates),
-      usage: this.gl.STATIC_DRAW,
+      usage: 0x88e4 satisfies WebGL2RenderingContext["STATIC_DRAW"],
       attributeDescriptor: {
         size: 3,
-        type: this.gl.FLOAT,
+        type: 0x1406 satisfies WebGL2RenderingContext["FLOAT"],
       },
     });
 
     this.client.attribute("a_color", {
       source: new Float32Array(colors.flat()),
-      usage: this.gl.STATIC_DRAW,
+      usage: 0x88e4 satisfies WebGL2RenderingContext["STATIC_DRAW"],
       attributeDescriptor: {
         size: 3,
-        type: this.gl.FLOAT,
+        type: 0x1406 satisfies WebGL2RenderingContext["FLOAT"],
       },
     });
     // https://en.wikipedia.org/wiki/Triangle_fan
     // https://en.wikipedia.org/wiki/Triangle_strip
-    this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 10);
-    // this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
-    // this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 2, 4);
-    // this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 4, 4);
-    // this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 6, 4);
-    this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 10, 4);
-    this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 14, 4);
+    this.client.drawArrays(
+      0x0005 satisfies WebGL2RenderingContext["TRIANGLE_STRIP"],
+      0,
+      10
+    );
+    this.client.drawArrays(
+      0x0005 satisfies WebGL2RenderingContext["TRIANGLE_STRIP"],
+      10,
+      4
+    );
+    this.client.drawArrays(
+      0x0005 satisfies WebGL2RenderingContext["TRIANGLE_STRIP"],
+      14,
+      4
+    );
   }
 }

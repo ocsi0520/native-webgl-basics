@@ -16,7 +16,9 @@ export class WebGLClient {
   private currentProgram!: WebGLProgram;
   private vaoByProgram: Map<WebGLProgram, WebGLVertexArrayObject> = new Map();
 
-  constructor(public gl: WebGL2RenderingContext) {}
+  constructor(private gl: WebGL2RenderingContext) {}
+
+  public drawArrays = this.gl.drawArrays.bind(this.gl);
 
   @WebGLClient.needProgram
   public uniform<MethodName extends UniformMethodName>(

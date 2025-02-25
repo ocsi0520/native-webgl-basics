@@ -1,47 +1,44 @@
 export class GLProgramFactory {
+  constructor(private gl: WebGL2RenderingContext) {}
   public createProgram(
-    gl: WebGL2RenderingContext,
     vertexShaderSource: string,
     fragmentShaderSource: string
   ): WebGLProgram {
     const vertexShader = this.createShader(
-      gl,
       vertexShaderSource,
-      gl.VERTEX_SHADER
+      this.gl.VERTEX_SHADER
     );
     const fragmentShader = this.createShader(
-      gl,
       fragmentShaderSource,
-      gl.FRAGMENT_SHADER
+      this.gl.FRAGMENT_SHADER
     );
 
-    const program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
+    const program = this.gl.createProgram();
+    this.gl.attachShader(program, vertexShader);
+    this.gl.attachShader(program, fragmentShader);
 
-    gl.linkProgram(program);
-    const success = gl.getProgramParameter(program, gl.LINK_STATUS);
+    this.gl.linkProgram(program);
+    const success = this.gl.getProgramParameter(program, this.gl.LINK_STATUS);
     if (!success) throw new Error("could not link program");
 
     return program;
   }
 
   private createShader(
-    gl: WebGL2RenderingContext,
     shaderSource: string,
     shaderType:
       | WebGL2RenderingContext["VERTEX_SHADER"]
       | WebGL2RenderingContext["FRAGMENT_SHADER"]
   ): WebGLShader {
-    const shader = gl.createShader(shaderType);
+    const shader = this.gl.createShader(shaderType);
     if (!shader)
       throw new Error(
         "could not create shader " + this.getShaderTypeString(shaderType)
       );
-    gl.shaderSource(shader, shaderSource);
-    gl.compileShader(shader);
+    this.gl.shaderSource(shader, shaderSource);
+    this.gl.compileShader(shader);
 
-    const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    const success = this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS);
     if (!success)
       throw new Error(
         "could not compile shader " + this.getShaderTypeString(shaderType)

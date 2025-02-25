@@ -7,9 +7,8 @@ import blackHoleImage from "/black_hole.jpg?url";
 
 export class BackgroundDrawer {
   private program: WebGLProgram;
-  constructor(private gl: WebGL2RenderingContext, private client: WebGLClient) {
-    this.program = new GLProgramFactory().createProgram(
-      gl,
+  constructor(programFactory: GLProgramFactory, private client: WebGLClient) {
+    this.program = programFactory.createProgram(
       backgroundVertexShaderSource,
       backgroundFragmentShaderSource
     );
@@ -23,13 +22,17 @@ export class BackgroundDrawer {
   public draw(): void {
     this.client.use(this.program);
     this.client.attribute("a_position", {
-      usage: this.gl.STATIC_DRAW,
+      usage: 0x88e4 satisfies WebGL2RenderingContext["STATIC_DRAW"],
       source: new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
       attributeDescriptor: {
         size: 2,
-        type: this.gl.FLOAT,
+        type: 0x1406 satisfies WebGL2RenderingContext["FLOAT"],
       },
     });
-    this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+    this.client.drawArrays(
+      0x0005 satisfies WebGL2RenderingContext["TRIANGLE_STRIP"],
+      0,
+      4
+    );
   }
 }

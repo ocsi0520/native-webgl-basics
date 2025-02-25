@@ -2,6 +2,7 @@ import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
 import { RotationComponent } from "./rotation/RotationComponent.js";
 import { BackgroundDrawer } from "./BackgroundDrawer";
 import { CubeDrawer } from "./CubeDrawer";
+import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory";
 
 const canvas = document.querySelector("canvas");
 if (!canvas) throw new Error("no canvas found");
@@ -10,17 +11,17 @@ if (!gl) throw new Error("no gl context for canvas");
 
 const client = new WebGLClient(gl);
 
-const bgDrawer = new BackgroundDrawer(gl, client);
-
 gl.clearColor(0, 0, 0, 0);
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.enable(gl.DEPTH_TEST);
 gl.enable(gl.CULL_FACE);
 
 const rotationComponent = new RotationComponent();
+const programFactory = new GLProgramFactory(gl);
 
-const cubeDrawer1 = new CubeDrawer(gl, client, [-0.5, -0.25, 0, 1]);
-const cubeDrawer2 = new CubeDrawer(gl, client, [0.2, 0.25, 0, 0]);
+const bgDrawer = new BackgroundDrawer(programFactory, client);
+const cubeDrawer1 = new CubeDrawer(programFactory, client, [-0.5, -0.25, 0, 1]);
+const cubeDrawer2 = new CubeDrawer(programFactory, client, [0.2, 0.25, 0, 0]);
 
 const drawLoop = (): void => {
   rotationComponent.increment();
