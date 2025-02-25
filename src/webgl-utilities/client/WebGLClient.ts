@@ -19,6 +19,7 @@ export class WebGLClient {
   constructor(private gl: WebGL2RenderingContext) {}
 
   public drawArrays = this.gl.drawArrays.bind(this.gl);
+  public viewport = this.gl.viewport.bind(this.gl);
 
   @WebGLClient.needProgram
   public uniform<MethodName extends UniformMethodName>(
@@ -74,6 +75,10 @@ export class WebGLClient {
   public clearCanvas(): void {
     this.gl.clearColor(0, 0, 0, 0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+  }
+
+  public configGLWith(capabilities: GLenum[]): void {
+    capabilities.forEach(cap => this.gl.enable(cap));
   }
 
   public async loadImage(

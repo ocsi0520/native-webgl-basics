@@ -11,10 +11,8 @@ if (!gl) throw new Error("no gl context for canvas");
 
 const client = new WebGLClient(gl);
 
-gl.clearColor(0, 0, 0, 0);
-gl.clear(gl.COLOR_BUFFER_BIT);
-gl.enable(gl.DEPTH_TEST);
-gl.enable(gl.CULL_FACE);
+client.clearCanvas();
+client.configGLWith([gl.DEPTH_TEST, gl.CULL_FACE]);
 
 const rotationComponent = new RotationComponent();
 const programFactory = new GLProgramFactory(gl);
@@ -41,7 +39,7 @@ const handleResize = (): void => {
   const shorterSide = Math.min(canvas.clientWidth, canvas.clientHeight);
   canvas.width = shorterSide;
   canvas.height = shorterSide;
-  gl.viewport(0, 0, shorterSide, shorterSide);
+  client.viewport(0, 0, shorterSide, shorterSide);
 };
 
 window.onresize = handleResize;
