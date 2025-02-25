@@ -1,14 +1,14 @@
 {
   "name": "triangle",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "vite",
     "build": "vite build"
   },
   "keywords": [],
-  "author": "",
+  "author": "Faragó Tamás (faragotamas0520@gmail.com)",
   "license": "ISC",
   "description": "",
   "devDependencies": {
