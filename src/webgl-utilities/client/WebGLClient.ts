@@ -7,15 +7,18 @@ import {
 import { Enumerate } from "../type-utils";
 
 export class WebGLClient {
-  private vertexArrayObject: WebGLVertexArrayObject;
-
-  constructor(
-    public gl: WebGL2RenderingContext,
-    public linkedProgram: WebGLProgram
-  ) {
-    this.vertexArrayObject = this.gl.createVertexArray();
+  private get vertexArrayObject(): WebGLVertexArrayObject {
+    return this.vaoByProgram.get(this.currentProgram)!;
   }
+  private set vertexArrayObject(value: WebGLVertexArrayObject) {
+    this.vaoByProgram.set(this.currentProgram, value);
+  }
+  private currentProgram!: WebGLProgram;
+  private vaoByProgram: Map<WebGLProgram, WebGLVertexArrayObject> = new Map();
 
+  constructor(public gl: WebGL2RenderingContext) {}
+
+  @WebGLClient.needProgram
   public uniform<MethodName extends UniformMethodName>(
     uniformName: string,
     methodName: MethodName,
@@ -23,20 +26,21 @@ export class WebGLClient {
   ): void {
     this.gl.bindVertexArray(this.vertexArrayObject);
     const uniformLocation = this.gl.getUniformLocation(
-      this.linkedProgram,
+      this.currentProgram,
       uniformName
     )!;
     const noTypeMethodParams = methodParams as [never, never, never, never];
     this.gl[`uniform${methodName}`](uniformLocation, ...noTypeMethodParams);
   }
 
+  @WebGLClient.needProgram
   public attribute(
     attributeName: string,
     { source, attributeDescriptor, usage }: BufferData
   ): void {
     this.gl.bindVertexArray(this.vertexArrayObject);
     const attribLocation = this.gl.getAttribLocation(
-      this.linkedProgram,
+      this.currentProgram,
       attributeName
     );
     const buffer = this.gl.createBuffer();
@@ -56,9 +60,13 @@ export class WebGLClient {
     );
   }
 
-  public useProgram(): void {
+  public use(program: WebGLProgram): void {
+    this.currentProgram = program;
+    if (!this.vertexArrayObject)
+      this.vertexArrayObject = this.gl.createVertexArray();
+
     this.gl.bindVertexArray(this.vertexArrayObject);
-    this.gl.useProgram(this.linkedProgram);
+    this.gl.useProgram(this.currentProgram);
   }
 
   public clearCanvas(): void {
@@ -118,5 +126,18 @@ export class WebGLClient {
       srcType,
       img
     );
+  }
+
+  private static needProgram(
+    _target: unknown,
+    propertyKey: string | symbol,
+    descriptor: PropertyDescriptor
+  ): void {
+    const originalFn = descriptor.value;
+    descriptor.value = function (this: WebGLClient, ...args: any[]) {
+      if (!this.currentProgram)
+        throw new Error(`no program: ${propertyKey.toString()}`);
+      return originalFn.call(this, ...args);
+    };
   }
 }
