@@ -27,10 +27,10 @@ const drawLoop = (): void => {
   rotationComponent.increment();
   bgDrawer.draw();
 
-  cubeDrawer1.uploadRotationBy(rotationComponent);
+  cubeDrawer1.uploadRotationBy(rotationComponent.getRotations());
   cubeDrawer1.draw();
 
-  cubeDrawer2.uploadRotationBy(rotationComponent);
+  cubeDrawer2.uploadRotationBy(rotationComponent.getRotations());
   cubeDrawer2.draw();
   requestAnimationFrame(drawLoop);
 };

@@ -1,5 +1,7 @@
 import { allAxis, Axis } from "./axis";
 
+export type RotationDescriptor = Record<Axis, number>;
+
 export class RotationComponent {
   private currentState: Record<
     Axis,
@@ -31,8 +33,12 @@ export class RotationComponent {
         this.currentState[axis].increment;
   }
 
-  public getRotationFor(axis: Axis): number {
-    return this.currentState[axis].currentDegree;
+  public getRotations(): RotationDescriptor {
+    return {
+      x: this.currentState.x.currentDegree,
+      y: this.currentState.y.currentDegree,
+      z: this.currentState.z.currentDegree,
+    };
   }
 
   private toggleAxis(axis: Axis): void {

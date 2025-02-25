@@ -1,7 +1,6 @@
 import cubeVertexShaderSource from "./shader/cube/vertexShader.vert?raw";
 import cubeFragmentShaderSource from "./shader/cube/fragmentShader.vert?raw";
-import { allAxis } from "./rotation/axis";
-import type { RotationComponent } from "./rotation/RotationComponent";
+import type { RotationDescriptor } from "./rotation/RotationComponent";
 import { WebGLClient } from "./webgl-utilities/client/WebGLClient";
 import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
 import { points } from "./vertex/cube-points";
@@ -23,16 +22,12 @@ export class CubeDrawer {
     client.uniform("translation", "4f", ...offset);
   }
 
-  public uploadRotationBy(rotationComponent: RotationComponent): void {
+  public uploadRotationBy(rotationDescriptor: RotationDescriptor): void {
     this.client.use(this.program);
 
-    allAxis.forEach((axis) => {
-      this.client.uniform(
-        `rotation${axis.toUpperCase()}`,
-        "1f",
-        rotationComponent.getRotationFor(axis)
-      );
-    });
+    this.client.uniform("rotationX", "1f", rotationDescriptor.x);
+    this.client.uniform("rotationY", "1f", rotationDescriptor.y);
+    this.client.uniform("rotationZ", "1f", rotationDescriptor.z);
   }
 
   public draw(): void {
