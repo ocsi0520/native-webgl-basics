@@ -1,5 +1,7 @@
-import vertexShaderSource from "./shader/cube/vertexShader.vert?raw";
-import fragmentShaderSource from "./shader/cube/fragmentShader.vert?raw";
+import cubeVertexShaderSource from "./shader/cube/vertexShader.vert?raw";
+import cubeFragmentShaderSource from "./shader/cube/fragmentShader.vert?raw";
+import backgroundVertexShaderSource from "./shader/background/vertexShader.vert?raw";
+import backgroundFragmentShaderSource from "./shader/background/fragmentShader.vert?raw";
 import blackHoleImage from "/black_hole.jpg?url";
 import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
 import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
@@ -13,19 +15,42 @@ if (!canvas) throw new Error("no canvas found");
 const gl = canvas.getContext("webgl2");
 if (!gl) throw new Error("no gl context for canvas");
 
-canvas.style.backgroundImage = `url(${blackHoleImage})`;
+const bgProgram = new GLProgramFactory().createProgram(
+  gl,
+  backgroundVertexShaderSource,
+  backgroundFragmentShaderSource
+);
+
+const bgClient = new WebGLClient(gl, bgProgram);
+bgClient.useProgram();
+const textureNumber = 0;
+bgClient.uniform("u_image", "1i", textureNumber);
+bgClient.loadImage(blackHoleImage, textureNumber);
+
+const drawBg = (): void => {
+  bgClient.useProgram();
+  bgClient.attribute("a_position", {
+    usage: gl.STATIC_DRAW,
+    source: new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+    attributeDescriptor: {
+      size: 2,
+      type: gl.FLOAT,
+    },
+  });
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+};
 
 const program1 = new GLProgramFactory().createProgram(
   gl,
-  vertexShaderSource,
-  fragmentShaderSource
+  cubeVertexShaderSource,
+  cubeFragmentShaderSource
 );
 const client1 = new WebGLClient(gl, program1);
 
 const program2 = new GLProgramFactory().createProgram(
   gl,
-  vertexShaderSource,
-  fragmentShaderSource
+  cubeVertexShaderSource,
+  cubeFragmentShaderSource
 );
 const client2 = new WebGLClient(gl, program2);
 
@@ -48,10 +73,10 @@ const uploadRotation = (client: WebGLClient): void => {
 
 client1.useProgram();
 uploadRotation(client1);
-client1.uniform("translation", "4f", -0.5, -0.25, -0.25, 1);
+client1.uniform("translation", "4f", -0.5, -0.25, 0, 1);
 client2.useProgram();
 uploadRotation(client2);
-client2.uniform("translation", "4f", 0.2, 0.25, 0.25, 0);
+client2.uniform("translation", "4f", 0.2, 0.25, 0, 0);
 
 const drawCube = (client: WebGLClient): void => {
   const allCoordinates = points.flat();
@@ -85,6 +110,7 @@ const drawCube = (client: WebGLClient): void => {
 
 const drawLoop = (): void => {
   rotationComponent.increment();
+  drawBg();
   client1.useProgram();
   uploadRotation(client1);
   drawCube(client1);
