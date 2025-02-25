@@ -1,25 +1,19 @@
 import cubeVertexShaderSource from "./shader/cube/vertexShader.vert?raw";
 import cubeFragmentShaderSource from "./shader/cube/fragmentShader.vert?raw";
-import backgroundVertexShaderSource from "./shader/background/vertexShader.vert?raw";
-import backgroundFragmentShaderSource from "./shader/background/fragmentShader.vert?raw";
-import blackHoleImage from "/black_hole.jpg?url";
 import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory.js";
 import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
 import { points } from "./vertex/cube-points";
 import { colors } from "./vertex/cube-color";
 import { RotationComponent } from "./rotation/RotationComponent.js";
 import { allAxis } from "./rotation/axis";
+import { BackgroundDrawer } from './BackgroundDrawer';
 
 const canvas = document.querySelector("canvas");
 if (!canvas) throw new Error("no canvas found");
 const gl = canvas.getContext("webgl2");
 if (!gl) throw new Error("no gl context for canvas");
 
-const bgProgram = new GLProgramFactory().createProgram(
-  gl,
-  backgroundVertexShaderSource,
-  backgroundFragmentShaderSource
-);
+const client = new WebGLClient(gl);
 
 const cubeProgram1 = new GLProgramFactory().createProgram(
   gl,
@@ -33,24 +27,7 @@ const cubeProgram2 = new GLProgramFactory().createProgram(
   cubeFragmentShaderSource
 );
 
-const client = new WebGLClient(gl);
-client.use(bgProgram);
-const textureNumber = 0;
-client.uniform("u_image", "1i", textureNumber);
-client.loadImage(blackHoleImage, textureNumber);
-
-const drawBg = (): void => {
-  client.use(bgProgram);
-  client.attribute("a_position", {
-    usage: gl.STATIC_DRAW,
-    source: new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-    attributeDescriptor: {
-      size: 2,
-      type: gl.FLOAT,
-    },
-  });
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-};
+const bgDrawer = new BackgroundDrawer(gl, client);
 
 gl.clearColor(0, 0, 0, 0);
 gl.clear(gl.COLOR_BUFFER_BIT);
@@ -59,8 +36,7 @@ gl.enable(gl.CULL_FACE);
 
 const rotationComponent = new RotationComponent();
 
-const uploadRotationFor = (program: WebGLProgram): void => {
-  client.use(program);
+const uploadRotationForCurrentProgram = (): void => {
   allAxis.forEach((axis) => {
     client.uniform(
       `rotation${axis.toUpperCase()}`,
@@ -70,12 +46,14 @@ const uploadRotationFor = (program: WebGLProgram): void => {
   });
 };
 
-uploadRotationFor(cubeProgram1);
-client.use(cubeProgram1);
-client.uniform("translation", "4f", -0.5, -0.25, 0, 1);
-client.use(cubeProgram2);
-uploadRotationFor(cubeProgram2);
-client.uniform("translation", "4f", 0.2, 0.25, 0, 0);
+const initCubeProgram = (program: WebGLProgram, offset: [number, number, number, number]): void => {
+  client.use(program);
+  uploadRotationForCurrentProgram();
+  client.uniform("translation", "4f", ...offset);
+}
+
+initCubeProgram(cubeProgram1, [-0.5, -0.25, 0, 1]);
+initCubeProgram(cubeProgram2, [0.2, 0.25, 0, 0]);
 
 const drawCube = (program: WebGLProgram): void => {
   client.use(program);
@@ -110,15 +88,16 @@ const drawCube = (program: WebGLProgram): void => {
 
 const drawLoop = (): void => {
   rotationComponent.increment();
-  drawBg();
+  bgDrawer.draw();
 
   client.use(cubeProgram1);
-  uploadRotationFor(cubeProgram1);
+  uploadRotationForCurrentProgram();
   drawCube(cubeProgram1);
 
   client.use(cubeProgram2);
-  uploadRotationFor(cubeProgram2);
+  uploadRotationForCurrentProgram();
   drawCube(cubeProgram2);
+
   requestAnimationFrame(drawLoop);
 };
 
