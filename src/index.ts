@@ -1,7 +1,7 @@
-import { WebGLClient } from "./webgl-utilities/client/WebGLClient.js";
-import { RotationComponent } from "./rotation/RotationComponent.js";
+import { WebGLClient } from "./webgl-utilities/client/WebGLClient";
+import { RotationComponent } from "./rotation/RotationComponent";
 import { BackgroundDrawer } from "./background/BackgroundDrawer";
-import { CubeDrawer } from "./cube/CubeDrawer.js";
+import { CubeDrawer } from "./cube/CubeDrawer";
 import { GLProgramFactory } from "./webgl-utilities/GLProgramFactory";
 
 const canvas = document.querySelector("canvas");

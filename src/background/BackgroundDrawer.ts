@@ -1,9 +1,8 @@
-import { GLProgramFactory } from "../webgl-utilities/GLProgramFactory.js";
+import blackHoleImage from "/black_hole.jpg?url";
 import backgroundVertexShaderSource from "./shader/vertexShader.vert?raw";
 import backgroundFragmentShaderSource from "./shader/fragmentShader.vert?raw";
-import { WebGLClient } from "../webgl-utilities/client/WebGLClient.js";
-
-import blackHoleImage from "/black_hole.jpg?url";
+import { GLProgramFactory } from "../webgl-utilities/GLProgramFactory";
+import { WebGLClient } from "../webgl-utilities/client/WebGLClient";
 
 export class BackgroundDrawer {
   private program: WebGLProgram;
