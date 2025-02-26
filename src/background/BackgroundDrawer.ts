@@ -18,8 +18,9 @@ export class BackgroundDrawer {
     client.loadImage(blackHoleImage, textureNumber);
   }
 
-  public draw(): void {
+  public draw(rotateInDegree: number): void {
     this.client.use(this.program);
+    this.client.uniform('rotation', '1f', rotateInDegree);
     this.client.attribute("a_position", {
       usage: 0x88e4 satisfies WebGL2RenderingContext["STATIC_DRAW"],
       source: new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),

@@ -21,9 +21,10 @@ const bgDrawer = new BackgroundDrawer(programFactory, client);
 const cubeDrawer1 = new CubeDrawer(programFactory, client, [-0.5, -0.25, 0, 1]);
 const cubeDrawer2 = new CubeDrawer(programFactory, client, [0.2, 0.25, 0, 0]);
 
-const drawLoop = (): void => {
+const drawLoop = (now: number): void => {
   rotationComponent.increment();
-  bgDrawer.draw();
+  const secondsPassed = now / 1000;
+  bgDrawer.draw(secondsPassed * 10);
 
   cubeDrawer1.uploadRotationBy(rotationComponent.getRotations());
   cubeDrawer1.draw();
@@ -47,4 +48,4 @@ window.onresize = handleResize;
 rotationComponent.attach(document.body);
 
 handleResize();
-drawLoop();
+requestAnimationFrame(drawLoop);
